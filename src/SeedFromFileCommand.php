@@ -54,7 +54,6 @@ class SeedFromFileCommand extends Command
 
         $progress_bar = $this->output->createProgressBar(count($files));
 
-
         $files_order = [];
 
         $no_order = count($files);
