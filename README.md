@@ -19,7 +19,7 @@ Enable the service provider by editing config/app.php:
 ```php
     'providers' => [
         ...
-        Bluora\PhpElixir\ServiceProvider::class,
+        Bluora\LaravelSeedFomFile\ServiceProvider::class,
         ...
     ];
 ```
