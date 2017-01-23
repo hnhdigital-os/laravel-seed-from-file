@@ -53,9 +53,9 @@ class SeedFromFileCommand extends Command
             $files = [$directory];
         }
 
-        $progressBar = $this->output->createProgressBar(count($files));
-        $filesOrder = [];
         $noOrder = count($files);
+        $progressBar = $this->output->createProgressBar($noOrder);
+        $filesOrder = [];
 
         foreach ($files as $filePath) {
             $tableName = File::name($filePath);
