@@ -86,22 +86,22 @@ class SeedFromFileCommand extends Command
                 try {
                     DB::connection($connection)->unprepared(File::get($filePath));
 
-                    $this->info('');
-                    $this->info('');
+                    $this->line('');
+                    $this->line('');
                     $this->info('Processing '.$tableName);
-                    $this->info('');
+                    $this->line('');
                 } catch (\Exception $exception) {
-                    $this->info('');
+                    $this->line('');
                     $this->error('SQL error occurred on importing '.$tableName);
-                    $this->info('');
+                    $this->line('');
                 }
 
                 $progressBar->advance();
             }
         }
 
-        $this->info('');
-        $this->info('');
+        $this->line('');
+        $this->line('');
         $this->info('Done.');
     }
 }
