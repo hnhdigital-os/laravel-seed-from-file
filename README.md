@@ -38,6 +38,7 @@ Please see [CONTRIBUTING](https://github.com/bluora/laravel-seed-from-file/blob/
 ## Credits
 
 * [Rocco Howard](https://github.com/therocis)
+* [Lucas Mezêncio](https://github.com/lucasmezencio)
 * [All Contributors](https://github.com/bluora/laravel-seed-from-file/contributors)
 
 ## License
