@@ -26,10 +26,10 @@ Enable the service provider by editing config/app.php:
 
 ## Usage
 
-`# php artisan db:seed-from-file {dir} {force_import?}`
+`# php artisan db:seed-from-file {dir} {--connection}`
 
 * {dir} - A file or a directory.
-* {force_import?} - optional 'true` or '1' to force import if records found are 0.
+* {--connection} - Set the connection that will be used when importing. Defaults to `Config::get('default')`.
 
 ## Contributing
 
