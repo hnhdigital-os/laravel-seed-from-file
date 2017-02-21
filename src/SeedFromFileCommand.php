@@ -2,6 +2,7 @@
 
 namespace Bluora\LaravelSeedFomFile;
 
+use Config;
 use DB;
 use File;
 use Illuminate\Console\Command;
@@ -13,12 +14,12 @@ class SeedFromFileCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'db:seed-from-file {dir} {force_import?}';
+    protected $signature = 'db:seed-from-file {dir} {--connection=}';
 
     /**
      * The console command description.
      *
-     * @var strings
+     * @var string
      */
     protected $description = 'Seed database from a file or files in a directory.';
 
@@ -30,7 +31,9 @@ class SeedFromFileCommand extends Command
     public function handle()
     {
         $directory = $this->argument('dir');
-        $force_import = !empty($this->argument('force_import'));
+        $connection = !empty($this->option('connection'))
+            ? $this->option('connection')
+            : Config::get('database.default');
 
         try {
             $type = File::type($directory);
@@ -40,59 +43,61 @@ class SeedFromFileCommand extends Command
             return 1;
         }
 
-        $this->info('Processing '.$directory);
-        $this->info('');
-
         if ($type === 'dir') {
             if ($directory[strlen($directory) - 1] === '/') {
                 $directory = substr($directory, 0, -1);
             }
+
             $files = File::files($directory);
         } else {
             $files = [$directory];
         }
 
-        $progress_bar = $this->output->createProgressBar(count($files));
+        $progressBar = $this->output->createProgressBar(count($files));
+        $filesOrder = [];
+        $noOrder = count($files);
 
-        $files_order = [];
+        foreach ($files as $filePath) {
+            $tableName = File::name($filePath);
+            $tableNameArray = explode('_', $tableName, 2);
 
-        $no_order = count($files);
-
-        foreach ($files as $file_path) {
-            $table_name = File::name($file_path);
-
-            $table_name_array = explode('_', $table_name, 2);
-            if (is_numeric($table_name_array[0])) {
-                $table_order = $table_name_array[0];
-                $files_order[$table_order] = $file_path;
+            if (is_numeric($tableNameArray[0])) {
+                $tableOrder = $tableNameArray[0];
+                $filesOrder[$tableOrder] = $filePath;
             } else {
-                $files_order[$no_order] = $file_path;
-                $no_order++;
+                $filesOrder[$noOrder] = $filePath;
+                $noOrder++;
             }
         }
 
-        ksort($files_order);
+        ksort($filesOrder);
 
-        foreach ($files_order as $file_path) {
-            $table_name = File::name($file_path);
+        $forceImport = $this->confirm('This will replace your current data in database. Are you sure? [y|N]');
 
-            $table_name_array = explode('_', $table_name, 2);
-            if (is_numeric($table_name_array[0])) {
-                $table_name = $table_name_array[1];
+        foreach ($filesOrder as $filePath) {
+            $tableName = File::name($filePath);
+            $tableNameArray = explode('_', $tableName, 2);
+
+            if (is_numeric($tableNameArray[0])) {
+                $tableName = $tableNameArray[1];
             }
 
-            $total_records = DB::table($table_name)->select(DB::raw('count(*) as total_records'))->value('total_records');
-
-            if ($total_records === 0 || $force_import) {
+            if ($forceImport) {
                 try {
-                    DB::unprepared(File::get($file_path));
+                    DB::connection($connection)->unprepared(File::get($filePath));
+
+                    $this->info('');
+                    $this->info('');
+                    $this->info('Processing '.$tableName);
+                    $this->info('');
                 } catch (\Exception $exception) {
                     $this->info('');
-                    $this->error('SQL error occured on importing '.$table_name);
+                    $this->error('SQL error occurred on importing '.$tableName);
                     $this->info('');
                 }
+
+                $progressBar->advance();
             }
-            $progress_bar->advance();
         }
 
         $this->info('');
