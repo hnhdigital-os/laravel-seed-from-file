@@ -2,6 +2,7 @@
 
 namespace Bluora\LaravelSeedFomFile;
 
+use Config;
 use DB;
 use File;
 use Illuminate\Console\Command;
@@ -13,7 +14,7 @@ class SeedFromFileCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'db:seed-from-file {dir} {force_import?} {connection?}';
+    protected $signature = 'db:seed-from-file {dir} {--connection=}';
 
     /**
      * The console command description.
@@ -30,7 +31,9 @@ class SeedFromFileCommand extends Command
     public function handle()
     {
         $directory = $this->argument('dir');
-        $forceImport = !empty($this->argument('force_import'));
+        $connection = !empty($this->option('connection'))
+            ? $this->option('connection')
+            : Config::get('database.default');
 
         try {
             $type = File::type($directory);
@@ -73,6 +76,8 @@ class SeedFromFileCommand extends Command
         ksort($filesOrder);
 
         foreach ($filesOrder as $filePath) {
+            $this->info('');
+
             $tableName = File::name($filePath);
             $tableNameArray = explode('_', $tableName, 2);
 
@@ -80,17 +85,12 @@ class SeedFromFileCommand extends Command
                 $tableName = $tableNameArray[1];
             }
 
-            $totalRecords = DB::table($tableName)
-                ->select(DB::raw('count(*) as total_records'))->value('total_records');
-
-            if ($totalRecords === 0 || $forceImport) {
-                try {
-                    DB::unprepared(File::get($filePath));
-                } catch (\Exception $exception) {
-                    $this->info('');
-                    $this->error('SQL error occured on importing '.$tableName);
-                    $this->info('');
-                }
+            try {
+                DB::connection($connection)->unprepared(File::get($filePath));
+            } catch (\Exception $exception) {
+                $this->info('');
+                $this->error('SQL error occured on importing '.$tableName);
+                $this->info('');
             }
 
             $progressBar->advance();
