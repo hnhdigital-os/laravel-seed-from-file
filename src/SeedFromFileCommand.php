@@ -43,9 +43,6 @@ class SeedFromFileCommand extends Command
             return 1;
         }
 
-        $this->info('Processing '.$directory);
-        $this->info('');
-
         if ($type === 'dir') {
             if ($directory[strlen($directory) - 1] === '/') {
                 $directory = substr($directory, 0, -1);
@@ -75,9 +72,9 @@ class SeedFromFileCommand extends Command
 
         ksort($filesOrder);
 
-        foreach ($filesOrder as $filePath) {
-            $this->info('');
+        $forceImport = $this->confirm('This will replace your current data in database. Are you sure? [y|N]');
 
+        foreach ($filesOrder as $filePath) {
             $tableName = File::name($filePath);
             $tableNameArray = explode('_', $tableName, 2);
 
@@ -85,15 +82,22 @@ class SeedFromFileCommand extends Command
                 $tableName = $tableNameArray[1];
             }
 
-            try {
-                DB::connection($connection)->unprepared(File::get($filePath));
-            } catch (\Exception $exception) {
-                $this->info('');
-                $this->error('SQL error occured on importing '.$tableName);
-                $this->info('');
-            }
+            if ($forceImport) {
+                try {
+                    DB::connection($connection)->unprepared(File::get($filePath));
 
-            $progressBar->advance();
+                    $this->info('');
+                    $this->info('');
+                    $this->info('Processing '.$tableName);
+                    $this->info('');
+                } catch (\Exception $exception) {
+                    $this->info('');
+                    $this->error('SQL error occured on importing '.$tableName);
+                    $this->info('');
+                }
+
+                $progressBar->advance();
+            }
         }
 
         $this->info('');
