@@ -92,7 +92,7 @@ class SeedFromFileCommand extends Command
                     $this->info('');
                 } catch (\Exception $exception) {
                     $this->info('');
-                    $this->error('SQL error occured on importing '.$tableName);
+                    $this->error('SQL error occurred on importing '.$tableName);
                     $this->info('');
                 }
 
