@@ -1,12 +1,12 @@
 {
-    "name": "bluora/laravel-seed-from-file",
+    "name": "hnhdigital-os/laravel-seed-from-file",
     "description": "Provides the ability to import a file or files from a folder into your database.",
     "keywords": ["laravel", "php", "db", "seed"],
     "license": "MIT",
     "authors": [
         {
             "name": "Rocco Howard",
-            "email": "rocco@bluora.com.au"
+            "email": "rocco@hnh.digital"
         }
     ],
     "require": {
