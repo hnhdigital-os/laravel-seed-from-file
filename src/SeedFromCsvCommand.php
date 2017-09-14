@@ -6,6 +6,7 @@ use Config;
 use DB;
 use File;
 use Illuminate\Console\Command;
+use League\Csv\Reader;
 
 class SeedFromCsvCommand extends Command
 {
@@ -72,7 +73,8 @@ class SeedFromCsvCommand extends Command
 
         ksort($filesOrder);
 
-        $forceImport = $this->confirm('This will replace your current data in database. Are you sure? [y|N]');
+        $this->info(' This process will replace any existing data.');
+        $forceImport = $this->confirm('Are you sure?');
 
         foreach ($filesOrder as $filePath) {
             $tableName = File::name($filePath);
@@ -85,18 +87,35 @@ class SeedFromCsvCommand extends Command
             if ($forceImport) {
                 try {
 
-                    $csv = File::get($filePath);
-
-                    echo $csv;
-
-                    exit();
-
-                    DB::connection($connection)->unprepared();
-
                     $this->line('');
                     $this->line('');
                     $this->info('Processing '.$tableName);
                     $this->line('');
+
+                    $csv = Reader::createFromPath($filePath);
+                    $csv->setHeaderOffset(0);
+
+                    DB::connection($connection)
+                        ->statement('SET FOREIGN_KEY_CHECKS=0;');
+
+                    DB::connection($connection)
+                        ->table($tableName)
+                        ->truncate();
+
+                    DB::connection($connection)
+                        ->statement('SET FOREIGN_KEY_CHECKS=1;');
+
+                    foreach ($csv as $record)  {
+                        foreach ($record as $key => &$value) {
+                            if ($value === 'NULL') {
+                                $value = null;
+                            }
+                        }
+
+                        DB::connection($connection)
+                            ->table($tableName)
+                            ->insert($record);
+                    }
                 } catch (\Exception $exception) {
                     $this->line('');
                     $this->error('SQL error occurred on importing '.$tableName);
