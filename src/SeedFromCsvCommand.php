@@ -86,7 +86,6 @@ class SeedFromCsvCommand extends Command
 
             if ($forceImport) {
                 try {
-
                     $this->line('');
                     $this->line('');
                     $this->info('Processing '.$tableName);
@@ -105,7 +104,7 @@ class SeedFromCsvCommand extends Command
                     DB::connection($connection)
                         ->statement('SET FOREIGN_KEY_CHECKS=1;');
 
-                    foreach ($csv as $record)  {
+                    foreach ($csv as $record) {
                         foreach ($record as $key => &$value) {
                             if ($value === 'NULL') {
                                 $value = null;
