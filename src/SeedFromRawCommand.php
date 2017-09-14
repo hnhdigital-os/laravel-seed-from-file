@@ -1,27 +1,27 @@
 <?php
 
-namespace Bluora\LaravelSeedFomFile;
+namespace HnhDigital\LaravelSeedFomFile;
 
 use Config;
 use DB;
 use File;
 use Illuminate\Console\Command;
 
-class SeedFromFileCommand extends Command
+class SeedFromRawCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'db:seed-from-file {dir} {--connection=}';
+    protected $signature = 'db:seed-from-raw {dir} {--connection=}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Seed database from a file or files in a directory.';
+    protected $description = 'Seed database from a raw SQL found in a given file or files in a directory.';
 
     /**
      * Execute the console command.
@@ -93,6 +93,7 @@ class SeedFromFileCommand extends Command
                 } catch (\Exception $exception) {
                     $this->line('');
                     $this->error('SQL error occurred on importing '.$tableName);
+                    $this->line($exception->getMessage());
                     $this->line('');
                 }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluora\LaravelSeedFomFile;
+namespace HnhDigital\LaravelSeedFomFile;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -15,18 +15,10 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                SeedFromFileCommand::class,
+                SeedFromCsvCommand::class,
+                SeedFromRawCommand::class,
             ]);
         }
     }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        // TODO: Implement register() method.
-    }
 }
