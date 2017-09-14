@@ -28,7 +28,7 @@ For Laravel 5.4 and below, enable the service provider by editing config/app.php
 
 ## Usage
 
-### CSV
+### Raw SQL
 
 `# php artisan db:seed-from-raw {dir} {--connection}`
 
