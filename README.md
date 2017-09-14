@@ -1,6 +1,6 @@
 # Laravel Seed From File
 
-Provides the ability to import data from a file or from files found in the supplied folder.
+Provides the ability to import data (raw sql or CSV) from a file or from files found in the supplied folder.
 
 [![Latest Stable Version](https://poser.pugx.org/hnhdigital-os/laravel-seed-from-file/v/stable.svg)](https://packagist.org/packages/hnhdigital-os/laravel-seed-from-file) [![Total Downloads](https://poser.pugx.org/hnhdigital-os/laravel-seed-from-file/downloads.svg)](https://packagist.org/packages/hnhdigital-os/laravel-seed-from-file) [![Latest Unstable Version](https://poser.pugx.org/hnhdigital-os/laravel-seed-from-file/v/unstable.svg)](https://packagist.org/packages/hnhdigital-os/laravel-seed-from-file) [![License](https://poser.pugx.org/hnhdigital-os/laravel-seed-from-file/license.svg)](https://packagist.org/packages/hnhdigital-os/laravel-seed-from-file)
 
@@ -14,19 +14,30 @@ Via composer:
 
 `$ composer require-dev hnhdigital-os/laravel-seed-from-file ~1.0`
 
-Enable the service provider by editing config/app.php:
+This package autoloads from Laravel 5.5.
+
+For Laravel 5.4 and below, enable the service provider by editing config/app.php:
 
 ```php
     'providers' => [
         ...
-        Bluora\LaravelSeedFomFile\ServiceProvider::class,
+        HnhDigital\LaravelSeedFomFile\ServiceProvider::class,
         ...
     ];
 ```
 
 ## Usage
 
-`# php artisan db:seed-from-file {dir} {--connection}`
+### CSV
+
+`# php artisan db:seed-from-raw {dir} {--connection}`
+
+* {dir} - A file or a directory.
+* {--connection} - Set the connection that will be used when importing. Defaults to `Config::get('default')`.
+
+### CSV
+
+`# php artisan db:seed-from-csv {dir} {--connection}`
 
 * {dir} - A file or a directory.
 * {--connection} - Set the connection that will be used when importing. Defaults to `Config::get('default')`.
